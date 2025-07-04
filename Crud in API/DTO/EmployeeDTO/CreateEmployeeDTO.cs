@@ -12,6 +12,6 @@ namespace Crud_in_API.DTO.EmployeeDTO
         [Range(0, 100000)]
         public decimal Salary { get; set; }
 
-        public int? DepartmentId { get; set; }
+        public int DepartmentId { get; set; }
     }
 }
