@@ -1,4 +1,6 @@
-﻿using Crud_in_API.Data;
+﻿using Azure.Core;
+using Crud_in_API.Data;
+using Crud_in_API.DTO.EmployeeDTO;
 using Crud_in_API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,18 +18,12 @@ namespace Crud_in_API.Controllers
         public IActionResult Index()
         {
             var employees = context.Employees
-                .Include(e => e.Department)
-                .Select(e => new Employee
+                .Select(e => new CreateEmployeeDTO
                 {
                     Id = e.Id,
                     Name = e.Name,
                     Salary = e.Salary,
                     DepartmentId = e.DepartmentId,
-                    Department = new Department
-                    {
-                        Id = e.Department.Id,
-                        Name = e.Department.Name
-                    }
                 }).ToList();
 
             return Ok(employees);
@@ -35,19 +31,19 @@ namespace Crud_in_API.Controllers
 
  
         [HttpPost]
-        public IActionResult Create([FromBody] Employee request)
+        public IActionResult Create(CreateEmployeeDTO request)
         {
-            var employee = new Employee
+            var Emp = new Employee
             {
                 Name = request.Name,
                 Salary = request.Salary,
-                DepartmentId = request.DepartmentId
+                DepartmentId = request.DepartmentId,
             };
 
-            context.Employees.Add(employee);
+            context.Employees.Add(Emp);
             context.SaveChanges();
 
-            return Ok(new { message = "Employee created", employee.Id });
+            return Ok(new { message = "Employee created", Emp.Id });
         }
 
        
@@ -65,7 +61,7 @@ namespace Crud_in_API.Controllers
 
         
         [HttpPatch("{id}")]
-        public IActionResult Update(int id, [FromBody] Employee request)
+        public IActionResult Update(int id, CreateEmployeeDTO request)
         {
             var employee = context.Employees.Find(id);
            

@@ -1,9 +1,10 @@
 ﻿using Crud_in_API.Data;
+using Crud_in_API.DTO.DepartmentDto;
+using Crud_in_API.DTO;
 using Crud_in_API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
 namespace Crud_in_API.Controllers
 {
     [Route("api/[controller]")]
@@ -15,28 +16,22 @@ namespace Crud_in_API.Controllers
         [HttpGet("")]
         public IActionResult Index()
         {
-            var departments = context.Departments
-                .Include(d => d.Employees)
-                .Select(d => new Department
+            var Departments = context.Departments
+                .Select(d => new CreateDepartmentDTO
                 {
                     Id = d.Id,
-                    Name = d.Name,
-                    Employees = d.Employees.Select(e => new Employee
-                    {
-                        Id = e.Id,
-                        Name = e.Name,
-                        Salary = e.Salary
-                    }).ToList()
+                    Name = d.Name, 
                 }).ToList();
 
-            return Ok(departments);
+            return Ok(Departments);
         }
         [HttpPost]
-        public IActionResult Create([FromBody] Department request)
+        public IActionResult Create(CreateDepartmentDTO request)
         {
+           
             var department = new Department
             {
-                Name = request.Name
+                Name = request.Name,
             };
 
             context.Departments.Add(department);
@@ -45,7 +40,6 @@ namespace Crud_in_API.Controllers
             return Ok(new { message = "Department created", department.Id });
         }
 
-        // DELETE: api/Departments/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
@@ -59,9 +53,9 @@ namespace Crud_in_API.Controllers
             return Ok(new { message = "Department deleted" });
         }
 
-        // PATCH: api/Departments/5
+        
         [HttpPatch("{id}")]
-        public IActionResult Update(int id, [FromBody] Department request)
+        public IActionResult Update(int id, CreateDepartmentDTO request)
         {
             var department = context.Departments.Find(id);
             if (department == null)
